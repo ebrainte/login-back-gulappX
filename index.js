@@ -1,6 +1,7 @@
 var express  = require('express');
+var cors = require('cors');
 var app      = express();
-var port     = process.env.PORT || 3000;
+var port     = process.env.PORT || 3001;
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
@@ -28,10 +29,14 @@ var db = mongoose.connection;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors({
+  credentials: true,
+  origin: 'http://localhost:3000'
+}));
 
 // Express Session
 app.use(session({
-    secret: 'secret',
+    secret: 'secretomuyjodido',
     saveUninitialized: true,
     resave: true
 }));
@@ -63,7 +68,7 @@ app.post('/register', function(req, res){
   		res.send(user).end()
   	});
   } else{
-    res.status(500).send("{error: \"Passwords don't match\"}").end()
+    res.status(500).send("{error: \"Las contrasenas no son iguales\"}").end()
   }
 });
 
@@ -105,14 +110,41 @@ passport.deserializeUser(function(id, done) {
 app.post('/login',
   passport.authenticate('local'),
   function(req, res) {
+    console.log("login");
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('test','asdadas');
     res.send(req.user);
   }
 );
 
+
+app.get('/loginstatus', function(req, res){
+  if (req.user) {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({loggedin:true}));
+    console.log(req.session.id);
+    console.log(req.session.cookie);
+    console.log("user logged in")
+} else {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({loggedin:false}));
+    console.log(req.session.id);
+    console.log(req.session.cookie);
+    console.log("user logged out")
+  }
+});
+
+
 // Endpoint to get current user
 app.get('/user', function(req, res){
-	res.send(req.user);
-})
+  if (req.user) {
+    res.send(req.user);
+} else {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({loggedin:false}))
+}
+
+});
 
 
 // Endpoint to logout
@@ -125,7 +157,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 passport.use(new FacebookStrategy({
     clientID: "923218504714255",
     clientSecret: "593aa0772e2bc99d5ec245a9ec11b18f",
-    callbackURL: "http://localhost:3000/auth/facebook/callback"
+    callbackURL: "http://localhost:3001/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     console.log(profile)
@@ -207,4 +239,4 @@ app.get("/createDummies", function(req, res){
 })
 
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.listen(3001, () => console.log('Example app listening on port 3001!'))
