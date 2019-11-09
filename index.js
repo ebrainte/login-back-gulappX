@@ -1,7 +1,7 @@
 var express  = require('express');
 var cors = require('cors');
 var app      = express();
-var port     = process.env.PORT || 3001;
+var port     = process.env.PORT || 47001;
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
@@ -13,7 +13,8 @@ var Post = require('./models/post')
 
 // Conenct to DB
 // mongoose.connect('mongodb+srv://gulappx:KK!^3sE%Gcx5Aycf!*m8N9@cluster0-pawlv.gcp.mongodb.net/test?retryWrites=true&w=majority');
-mongoose.connect('mongodb://localhost/loginapp');
+//mongoose.connect('mongodb://localhost/loginapp');
+mongoose.connect('mongodb+srv://apitickets:OsylkRfjHJkK0zvK@apitickets-yb4pe.gcp.mongodb.net/test?retryWrites=true&w=majority');
 
 // function connectDatabase(databaseUri){
 //   var promise = mongoose.connect('mongodb+srv://gulappx:KK!^3sE%Gcx5Aycf!*m8N9@cluster0-pawlv.gcp.mongodb.net/test?retryWrites=true&w=majority', {
@@ -157,7 +158,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 passport.use(new FacebookStrategy({
     clientID: "923218504714255",
     clientSecret: "593aa0772e2bc99d5ec245a9ec11b18f",
-    callbackURL: "http://localhost:3001/auth/facebook/callback"
+    callbackURL: "http://back.arielsandor.com:47001/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     console.log(profile)
@@ -239,4 +240,4 @@ app.get("/createDummies", function(req, res){
 })
 
 
-app.listen(3001, () => console.log('Example app listening on port 3001!'))
+app.listen(47001, () => console.log('Example app listening on port 47001!'))
